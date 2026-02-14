@@ -1,0 +1,4 @@
+profile:
+  name: "Fast Coding"
+  description: "Quick iteration with Qwen2.5-Coder-7B AWQ"
+  model: qwen2.5-coder-7b-awq

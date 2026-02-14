@@ -1,0 +1,64 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: llm-inference
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
+    environment:
+      - HF_TOKEN=${HF_TOKEN:-}
+    shm_size: '16gb'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >
+      --model ${MODEL_REPO}
+      --served-model-name ${MODEL_NAME}
+      --tensor-parallel-size ${TP_SIZE:-1}
+      --quantization ${QUANTIZATION:-none}
+      --dtype ${DTYPE:-auto}
+      --gpu-memory-utilization ${GPU_MEM_UTIL:-0.90}
+      --max-model-len ${MAX_MODEL_LEN:-32768}
+      --host 0.0.0.0 --port 8000
+      --api-key ${API_KEY:-local-dev-key}
+      ${VLLM_EXTRA_ARGS:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    profiles: ["vllm"]
+
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: llm-inference
+    ports:
+      - "${PORT:-8000}:8080"
+    volumes:
+      - ${HF_CACHE:-~/.cache/huggingface}:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >
+      -m /models/${MODEL_FILE}
+      --host 0.0.0.0 --port 8080
+      -ngl ${N_GPU_LAYERS:-40}
+      -t ${THREADS:-16}
+      -c ${CTX_SIZE:-32768}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 300s
+    profiles: ["llamacpp"]

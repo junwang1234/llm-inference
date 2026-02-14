@@ -1,0 +1,4 @@
+profile:
+  name: "Quality Coding"
+  description: "Primary coding model with Qwen2.5-Coder-32B GPTQ"
+  model: qwen2.5-coder-32b-gptq

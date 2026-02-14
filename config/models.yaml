@@ -1,0 +1,83 @@
+models:
+  qwen3-32b-awq:
+    name: "Qwen3 32B (AWQ-INT4)"
+    hf_repo: "Qwen/Qwen3-32B-AWQ"
+    backend: vllm
+    quantization: awq_marlin
+    dtype: float16
+    context_window: 65536
+    max_tokens: 8192
+    gpu_config:
+      tensor_parallel_size: 2
+      gpu_memory_utilization: 0.90
+    tags: [agentic, reasoning, primary]
+
+  qwen2.5-coder-32b-gptq:
+    name: "Qwen2.5 Coder 32B (GPTQ-INT4)"
+    hf_repo: "Qwen/Qwen2.5-Coder-32B-Instruct-GPTQ-Int4"
+    backend: vllm
+    quantization: gptq_marlin
+    dtype: float16
+    context_window: 32768
+    max_tokens: 8192
+    gpu_config:
+      tensor_parallel_size: 2
+      gpu_memory_utilization: 0.90
+    tags: [coding, primary]
+
+  qwen2.5-coder-7b-awq:
+    name: "Qwen2.5 Coder 7B (AWQ-INT4)"
+    hf_repo: "Qwen/Qwen2.5-Coder-7B-Instruct-AWQ"
+    backend: vllm
+    quantization: awq
+    dtype: float16
+    context_window: 32768
+    max_tokens: 8192
+    gpu_config:
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.85
+    tags: [coding, fast]
+
+  deepseek-coder-v2-lite:
+    name: "DeepSeek Coder V2 Lite (15.7B MoE)"
+    hf_repo: "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct"
+    backend: vllm
+    quantization: none
+    dtype: float16
+    context_window: 32768
+    max_tokens: 8192
+    gpu_config:
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.90
+    tags: [coding, reasoning]
+
+  deepseek-r1-distill-qwen-32b-gptq:
+    name: "DeepSeek R1 Distill Qwen 32B (GPTQ-INT4)"
+    hf_repo: "ModelCloud/DeepSeek-R1-Distill-Qwen-32B-gptq-4bit"
+    backend: vllm
+    quantization: gptq
+    dtype: float16
+    context_window: 32768
+    max_tokens: 8192
+    gpu_config:
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.90
+    tags: [reasoning]
+
+  llama-3.1-70b-q4:
+    name: "Llama 3.1 70B (GGUF Q4_K_M)"
+    hf_repo: "bartowski/Meta-Llama-3.1-70B-Instruct-GGUF"
+    hf_file: "Meta-Llama-3.1-70B-Instruct-Q4_K_M.gguf"
+    backend: llamacpp
+    context_window: 32768
+    max_tokens: 4096
+    llamacpp_args:
+      n_gpu_layers: 45
+      threads: 16
+    tags: [reasoning, quality]
+
+defaults:
+  host: "0.0.0.0"
+  port: 8000
+  model: qwen2.5-coder-32b-gptq
+  api_key: "local-dev-key"
